@@ -2,6 +2,7 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config();
+const ObjectId = require("mongodb").ObjectId;
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,6 +20,7 @@ async function run() {
         await client.connect();
         const database = client.db('tourX');
         const servicesCollection = database.collection('services');
+        const orderCollection = database.collection('orders');
 
         //    GET API
         app.get('/services', async (req, res) => {
@@ -27,7 +29,7 @@ async function run() {
             res.send(services)
         })
 
-        //    POST API
+        //    POST Services
         app.post('/services', async (req, res) => {
             const service = req.body;
             console.log('Hit the post api', service);
@@ -36,6 +38,33 @@ async function run() {
             console.log(result);
             res.json(result);
         });
+
+        // Post Order 
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            console.log('Hit the post api', order);
+
+            const result = await orderCollection.insertOne(order);
+            console.log(result);
+            res.json(result);
+        });
+
+        // GET Orders
+        app.get("/orders", async (req, res) => {
+            const cursor = await orderCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+
+        // delete Order
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            console.log('deleting order with id ', id)
+            res.send(result);
+        })
+
 
     }
     finally {
