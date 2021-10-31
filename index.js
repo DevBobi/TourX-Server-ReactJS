@@ -22,7 +22,7 @@ async function run() {
         const servicesCollection = database.collection('services');
         const orderCollection = database.collection('orders');
 
-        //    GET API
+        //    GET Services
         app.get('/services', async (req, res) => {
             const cursor = servicesCollection.find({});
             const services = await cursor.toArray();
@@ -56,7 +56,7 @@ async function run() {
             res.send(orders);
         });
 
-        // delete Order
+        // DELETE Orders
         app.delete('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -75,7 +75,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('Running Tour-X server')
+    res.send('Running My Tour-X server')
 });
 
 app.listen(port, () => {
